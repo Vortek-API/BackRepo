@@ -1,0 +1,67 @@
+### IntelliJ IDEA ###
+.idea/
+*.iml
+*.iws
+
+### Eclipse ###
+.project
+.classpath
+.settings/
+*.launch
+
+### VS Code ###
+.vscode/
+
+### Maven ###
+/target/
+*.log
+.mvn/
+mvnw*
+
+### Gradle ###
+/.gradle/
+/build/
+
+### OS Specific ###
+.DS_Store
+Thumbs.db
+
+### Logs ###
+*.log
+
+### Spring Boot ###
+/cimob/target/
+/cimob/.mvn/
+/cimob/mvnw*
+/cimob/*.jar
+/cimob/*.war
+
+### Misc ###
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.bak
+*.swp
+*~
+*.tmp
+*.out
+
+### Secrets ###
+/cimob/src/main/resources/application.properties
+application.yml
+application-*.properties
+application-*.yml
+/cimob/target
+/cimob/target/classes/vortek/sistponto/cimob/Controllers/*.class
+/cimob/target/classes/vortek/sistponto/cimob/*.class
+/cimob/target/classes/vortek/sistponto/*.class
+/cimob/target/classes/vortek/*.class
+/cimob/target/classes/*.class
+/cimob/target/classes/*.class
+/cimob/target/*.class
+*.class
