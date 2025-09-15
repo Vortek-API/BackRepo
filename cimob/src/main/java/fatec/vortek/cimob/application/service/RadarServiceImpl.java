@@ -2,7 +2,7 @@ package fatec.vortek.cimob.application.service;
 
 import fatec.vortek.cimob.domain.model.Radar;
 import fatec.vortek.cimob.domain.service.RadarService;
-import fatec.vortek.cimob.infraestruture.repository.RadarRepository;
+import fatec.vortek.cimob.infrastructure.repository.RadarRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
