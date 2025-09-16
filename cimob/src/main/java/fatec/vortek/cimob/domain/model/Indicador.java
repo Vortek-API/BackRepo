@@ -25,10 +25,10 @@ public class Indicador {
 
     @Column(length = 255)
     private String descricao;
-    // TODO Descomentar quando a Usuario estiver feita
-    // @ManyToOne
-    // @JoinColumn(name = "usuarioId")
-    // private Usuario usuario;
+    
+    @ManyToOne
+    @JoinColumn(name = "usuarioId")
+    private Usuario usuario;
 
     @Column(length = 1, nullable = false)
     private String deletado = "N";

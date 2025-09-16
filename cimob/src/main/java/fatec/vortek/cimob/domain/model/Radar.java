@@ -33,4 +33,4 @@ public class Radar {
 
     @Column(length = 1, nullable = false)
     private String deletado = "N";
-}
+} 
