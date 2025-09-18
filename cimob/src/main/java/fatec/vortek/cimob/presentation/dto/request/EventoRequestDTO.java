@@ -2,7 +2,6 @@ package fatec.vortek.cimob.presentation.dto.request;
 
 import lombok.*;
 
-import java.util.Date;
 import java.util.List;
 
 @Data
