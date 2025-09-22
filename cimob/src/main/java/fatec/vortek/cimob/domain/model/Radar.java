@@ -19,10 +19,10 @@ public class Radar {
     @JoinColumn(name = "regiaoId", nullable = false)
     private Regiao regiao;
 
-    @Column(nullable = false, precision = 9, scale = 6)
+    @Column(nullable = false)
     private Double latitude;
 
-    @Column(nullable = false, precision = 9, scale = 6)
+    @Column(nullable = false)
     private Double longitude;
 
     @Column(length = 200)
