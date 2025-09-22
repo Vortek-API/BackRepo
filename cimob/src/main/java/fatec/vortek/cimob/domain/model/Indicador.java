@@ -20,7 +20,6 @@ public class Indicador {
     @Column(nullable = false, length = 100)
     private String nome;
 
-    @Column(precision = 10, scale = 2)
     private Double valor;
 
     @Column(length = 255)

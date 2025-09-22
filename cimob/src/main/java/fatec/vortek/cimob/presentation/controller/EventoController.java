@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/eventos")
+@RequestMapping("/api/eventos")
 @RequiredArgsConstructor
+@Tag(name = "Eventos")
 public class EventoController {
 
     private final EventoServiceImpl service;
@@ -40,13 +42,13 @@ public class EventoController {
         return ResponseEntity.ok(list);
     }
 
-    @PostMapping("/{eventoId}/indicadores/{indicadorId}")
+    @PostMapping("/{eventoId}/associarIndicador/{indicadorId}")
     public ResponseEntity<Void> associarIndicador(@PathVariable Long eventoId, @PathVariable Long indicadorId) {
         service.associarIndicador(eventoId, indicadorId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping("/{eventoId}/indicadores/{indicadorId}")
+    @DeleteMapping("/{eventoId}/desassociarIndicador/{indicadorId}")
     public ResponseEntity<Void> desassociarIndicador(@PathVariable Long eventoId, @PathVariable Long indicadorId) {
         service.desassociarIndicador(eventoId, indicadorId);
         return ResponseEntity.noContent().build();

@@ -10,12 +10,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/radars")
+@RequestMapping("/api/radares")
 @RequiredArgsConstructor
+@Tag(name = "Radares")
 public class RadarController {
 
     private final RadarServiceImpl radarService;

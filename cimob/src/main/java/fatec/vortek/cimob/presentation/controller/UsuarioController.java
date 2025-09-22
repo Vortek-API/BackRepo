@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import fatec.vortek.cimob.application.service.UsuarioServiceImpl;
 import fatec.vortek.cimob.presentation.dto.request.UsuarioRequestDTO;
 import fatec.vortek.cimob.presentation.dto.response.UsuarioResponseDTO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/api/usuario")
 @RequiredArgsConstructor
+@Tag(name = "Usuarios")
 public class UsuarioController {
     
     private final UsuarioServiceImpl service;

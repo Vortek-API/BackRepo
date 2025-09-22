@@ -8,12 +8,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/regioes")
+@RequestMapping("/api/regioes")
 @RequiredArgsConstructor
+@Tag(name = "Regioes")
 public class RegiaoController {
 
     private final RegiaoServiceImpl service;
