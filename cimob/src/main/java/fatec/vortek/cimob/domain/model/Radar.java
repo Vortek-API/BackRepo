@@ -13,6 +13,7 @@ public class Radar {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "radarId")
     private Long radarId;
 
     @ManyToOne
@@ -28,7 +29,7 @@ public class Radar {
     @Column(length = 200)
     private String endereco;
 
-    @Column(nullable = false)
+    @Column(name = "velocidadePermitida", nullable = false)
     private Integer velocidadePermitida;
 
     @Column(length = 1, nullable = false)
