@@ -65,7 +65,7 @@ public class RadarController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RadarResponseDTO> buscar(@PathVariable Long id) {
+    public ResponseEntity<RadarResponseDTO> buscar(@PathVariable String id) {
         Radar r = radarService.buscarPorId(id);
         if (r == null || "S".equals(r.getDeletado())) {
             return ResponseEntity.notFound().build();
@@ -82,7 +82,7 @@ public class RadarController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RadarResponseDTO> atualizar(@PathVariable Long id, @RequestBody RadarRequestDTO dto) {
+    public ResponseEntity<RadarResponseDTO> atualizar(@PathVariable String id, @RequestBody RadarRequestDTO dto) {
         Radar r = radarService.buscarPorId(id);
         if (r == null || "S".equals(r.getDeletado())) {
             return ResponseEntity.notFound().build();
@@ -109,7 +109,7 @@ public class RadarController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable String id) {
         Radar r = radarService.buscarPorId(id);
         if (r == null || "S".equals(r.getDeletado())) {
             return ResponseEntity.notFound().build();

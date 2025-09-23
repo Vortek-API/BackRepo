@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class RadarResponseDTO {
-    private Long radarId;
+    private String radarId;
     private Long regiaoId;
     private Double latitude;
     private Double longitude;

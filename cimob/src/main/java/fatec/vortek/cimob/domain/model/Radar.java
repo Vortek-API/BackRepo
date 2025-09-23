@@ -14,7 +14,7 @@ public class Radar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "radarId")
-    private Long radarId;
+    private String radarId;
 
     @ManyToOne
     @JoinColumn(name = "regiaoId", nullable = false)

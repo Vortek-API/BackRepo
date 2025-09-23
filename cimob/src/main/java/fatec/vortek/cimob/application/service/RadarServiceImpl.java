@@ -25,7 +25,7 @@ public class RadarServiceImpl implements RadarService {
     }
 
     @Override
-    public void deletar(Long id) {
+    public void deletar(String id) {
         repository.findById(id).ifPresent(r -> {
             r.setDeletado("S");
             repository.save(r);
@@ -33,7 +33,7 @@ public class RadarServiceImpl implements RadarService {
     }
 
     @Override
-    public Radar buscarPorId(Long id) {
+    public Radar buscarPorId(String id) {
         return repository.findById(id).orElse(null);
     }
 

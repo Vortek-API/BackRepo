@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class RegistroVelocidadeResponseDTO {
     private Long registroVelocidadeId;
-    private Long radarId;
+    private String radarId;
     private String tipoVeiculo;
     private Integer velocidadeRegistrada;
     private LocalDateTime data;
