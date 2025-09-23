@@ -15,6 +15,7 @@ public class Indicador {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "indicadorId")
     private Long indicadorId;
 
     @Column(nullable = false, length = 100)

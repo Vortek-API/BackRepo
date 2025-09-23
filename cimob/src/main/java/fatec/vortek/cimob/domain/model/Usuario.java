@@ -13,6 +13,7 @@ import lombok.*;
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "usuarioId")
     private Long usuarioId;
 
     @Column(nullable = false, length = 11)
