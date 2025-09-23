@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class RegistroVelocidadeRequestDTO {
-    private Long radarId;
+    private String radarId;
     private String tipoVeiculo;
     private Integer velocidadeRegistrada;
     private LocalDateTime data;
