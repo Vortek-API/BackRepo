@@ -6,7 +6,7 @@ import java.util.List;
 public interface RadarService {
     Radar criar(Radar radar);
     Radar atualizar(Radar radar);
-    void deletar(Long id);
-    Radar buscarPorId(Long id);
+    void deletar(String id);
+    Radar buscarPorId(String id);
     List<Radar> listarTodos();
 }
