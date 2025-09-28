@@ -21,6 +21,15 @@ CREATE TABLE Regiao (
     deletado    CHAR(1) DEFAULT 'N' CHECK (deletado IN ('S','N'))
 );
 
+CREATE TABLE RegiaoPoligono (
+    regiaoId NUMBER NOT NULL,
+    pontoId NUMBER NOT NULL,
+    coordX NUMBER NOT NULL,
+    coordY NUMBER NOT NULL,
+    PRIMARY KEY (regiaoId, pontoId),
+    FOREIGN KEY (regiaoId) REFERENCES Regiao(regiaoId)
+);
+
 -- Radar
 CREATE TABLE Radar (
     radarId             VARCHAR2(100) PRIMARY KEY,
