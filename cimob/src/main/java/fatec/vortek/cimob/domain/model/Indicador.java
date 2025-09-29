@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.util.List;
 
+import fatec.vortek.cimob.domain.enums.IndicadorMnemonico;
+
 @Entity
 @Table(name = "Indicador")
 @Data
@@ -14,22 +16,34 @@ import java.util.List;
 public class Indicador {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(
+        name = "seq_indicador",
+        sequenceName = "seq_indicador",
+        allocationSize = 1
+    )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_indicador")
     @Column(name = "indicadorId")
     private Long indicadorId;
 
     @Column(nullable = false, length = 100)
     private String nome;
 
+    @Transient
     private Double valor;
+
+    @Column(length = 100)
+    @Enumerated(EnumType.STRING)
+    private IndicadorMnemonico mnemonico;
+
 
     @Column(length = 255)
     private String descricao;
-    
+
     @ManyToOne
     @JoinColumn(name = "usuarioId")
     private Usuario usuario;
 
+    @Builder.Default
     @Column(length = 1, nullable = false)
     private String deletado = "N";
 

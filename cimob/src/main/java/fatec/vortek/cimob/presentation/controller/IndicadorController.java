@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import fatec.vortek.cimob.presentation.dto.response.IndiceCriticoResponseDTO;
 
 @RestController
 @RequestMapping("/api/indicadores")
@@ -27,20 +28,41 @@ public class IndicadorController {
         Indicador i = Indicador.builder()
                 .nome(dto.getNome())
                 .valor(dto.getValor())
+                .mnemonico(dto.getMnemonico())
                 .descricao(dto.getDescricao())
+                .deletado("N")
                 .build();
         i = service.criar(i);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new IndicadorResponseDTO(i.getIndicadorId(), i.getNome(), i.getValor(), i.getDescricao(), null));
+                .body(new IndicadorResponseDTO(i.getIndicadorId(), i.getNome(), i.getValor(), i.getMnemonico(), i.getDescricao(), null));
     }
 
     @GetMapping
-    public ResponseEntity<List<IndicadorResponseDTO>> listar() {
-        List<IndicadorResponseDTO> list = service.listarTodos().stream()
-                .filter(i -> !"S".equals(i.getDeletado()))
-                .map(i -> new IndicadorResponseDTO(i.getIndicadorId(), i.getNome(), i.getValor(), i.getDescricao(), null))
+    public ResponseEntity<List<IndicadorResponseDTO>> listar(
+            @RequestParam(required = false) Long regiaoId,
+            @RequestParam(required = false) String dataInicial) {
+        List<Indicador> indicadores;
+        
+        if (regiaoId != null) {
+            indicadores = service.listarPorRegiao(regiaoId, dataInicial);
+        } else {
+            indicadores = service.listarTodos(dataInicial).stream()
+                    .filter(i -> !"S".equals(i.getDeletado()))
+                    .collect(Collectors.toList());
+        }
+        
+        List<IndicadorResponseDTO> list = indicadores.stream()
+                .map(i -> new IndicadorResponseDTO(i.getIndicadorId(), i.getNome(), i.getValor(), i.getMnemonico(), i.getDescricao(), null))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/indices-criticos")
+    public ResponseEntity<List<IndiceCriticoResponseDTO>> listarIndicesCriticos(
+            @RequestParam(required = false) Long regiaoId,
+            @RequestParam(required = false) String dataInicial) {
+        List<IndiceCriticoResponseDTO> resp = service.listarTopExcessosVelocidade(regiaoId, dataInicial);
+        return ResponseEntity.ok(resp);
     }
 
     @PostMapping("/{indicadorId}/associarEvento/{eventoId}")
