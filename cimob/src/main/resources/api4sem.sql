@@ -21,10 +21,19 @@ CREATE TABLE Regiao (
     deletado    CHAR(1) DEFAULT 'N' CHECK (deletado IN ('S','N'))
 );
 
+CREATE TABLE RegiaoPoligono (
+    regiaoId NUMBER NOT NULL,
+    pontoId NUMBER NOT NULL,
+    coordX NUMBER NOT NULL,
+    coordY NUMBER NOT NULL,
+    PRIMARY KEY (regiaoId, pontoId),
+    FOREIGN KEY (regiaoId) REFERENCES Regiao(regiaoId)
+);
+
 -- Radar
 CREATE TABLE Radar (
     radarId             VARCHAR2(100) PRIMARY KEY,
-    regiaoId            NUMBER NOT NULL,
+    regiaoId            NUMBER,
     latitude            NUMBER(9,6) NOT NULL,
     longitude           NUMBER(9,6) NOT NULL,
     endereco            VARCHAR2(200),
@@ -37,8 +46,8 @@ CREATE TABLE Radar (
 -- Registro de Velocidade
 CREATE TABLE RegistroVelocidade (
     registroVelocidadeId NUMBER PRIMARY KEY,
-    radarId              NUMBER NOT NULL,
-    tipoVeiculo          VARCHAR2(50) NOT NULL,
+    radarId              VARCHAR2(100),
+    tipoVeiculo          VARCHAR2(50),
     velocidadeRegistrada NUMBER(3) NOT NULL,
     data                 DATE DEFAULT SYSDATE NOT NULL,
     deletado             CHAR(1) DEFAULT 'N' CHECK (deletado IN ('S','N')),
@@ -50,7 +59,7 @@ CREATE TABLE RegistroVelocidade (
 CREATE TABLE Indicador (
     indicadorId NUMBER PRIMARY KEY,
     nome        VARCHAR2(100) NOT NULL,
-    valor       NUMBER(10,2),
+    mnemonico   VARCHAR2(100),
     descricao   VARCHAR2(255),
     usuarioId   NUMBER,
     deletado    CHAR(1) DEFAULT 'N' CHECK (deletado IN ('S','N')),
