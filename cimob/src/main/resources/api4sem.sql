@@ -59,7 +59,7 @@ CREATE TABLE RegistroVelocidade (
 CREATE TABLE Indicador (
     indicadorId NUMBER PRIMARY KEY,
     nome        VARCHAR2(100) NOT NULL,
-    valor       NUMBER(10,2),
+    mnemonico   VARCHAR2(100),
     descricao   VARCHAR2(255),
     usuarioId   NUMBER,
     deletado    CHAR(1) DEFAULT 'N' CHECK (deletado IN ('S','N')),
