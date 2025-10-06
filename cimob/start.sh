@@ -29,7 +29,7 @@ wallet_parent = os.environ['WALLET_PARENT']
 with zipfile.ZipFile(tmp_zip) as zf:
     zf.extractall(wallet_parent)
 PY
-  else
+  elif command -v python >/dev/null 2>&1; then
     python - <<'PY'
 import os, zipfile
 tmp_zip = os.environ['TMP_ZIP']
@@ -37,6 +37,11 @@ wallet_parent = os.environ['WALLET_PARENT']
 with zipfile.ZipFile(tmp_zip) as zf:
     zf.extractall(wallet_parent)
 PY
+  elif command -v jar >/dev/null 2>&1; then
+    (cd "$wallet_parent" && jar xf "$TMP_ZIP")
+  else
+    echo "Unable to extract wallet zip: require unzip, python3, python, or jar" >&2
+    exit 1
   fi
 fi
 
