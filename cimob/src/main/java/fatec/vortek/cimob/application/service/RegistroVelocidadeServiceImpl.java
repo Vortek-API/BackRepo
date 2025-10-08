@@ -66,12 +66,6 @@ public class RegistroVelocidadeServiceImpl implements RegistroVelocidadeService 
     }
 
     private RegistroVelocidadeResponseDTO toResponseDTO(RegistroVelocidade registro) {
-        return new RegistroVelocidadeResponseDTO(
-                registro.getRegistroVelocidadeId(),
-                registro.getRadar().getRadarId(),
-                registro.getTipoVeiculo(),
-                registro.getVelocidadeRegistrada(),
-                registro.getData()
-        );
+        return RegistroVelocidadeResponseDTO.RegistroVelocidadeModel2ResponseDTO(registro);
     }
 }
