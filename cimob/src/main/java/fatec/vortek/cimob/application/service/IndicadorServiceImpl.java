@@ -14,6 +14,9 @@ import fatec.vortek.cimob.infrastructure.repository.RadarRepository;
 import fatec.vortek.cimob.infrastructure.repository.RegistroVelocidadeRepository;
 import fatec.vortek.cimob.presentation.dto.response.IndiceCriticoResponseDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cglib.core.Local;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +26,6 @@ import java.util.Map;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -34,20 +36,22 @@ public class IndicadorServiceImpl implements IndicadorService {
     private final RegiaoService regiaoService;
     private final RadarRepository radarRepository;
     private final RegistroVelocidadeRepository registroVelocidadeRepository;
-
     private final RadarServiceImpl radarService;
 
     @Override
+    @CacheEvict(value = "indicadores", allEntries = true)
     public Indicador criar(Indicador indicador) {
         return repository.save(indicador);
     }
 
     @Override
+    @CacheEvict(value = "indicadores", allEntries = true)
     public Indicador atualizar(Indicador indicador) {
         return repository.save(indicador);
     }
 
     @Override
+    @CacheEvict(value = "indicadores", allEntries = true)
     public void deletar(Long id) {
         Indicador i = repository.findById(id).orElseThrow();
         i.setDeletado("S");
@@ -55,6 +59,7 @@ public class IndicadorServiceImpl implements IndicadorService {
     }
 
     @Override
+    @Cacheable(value = "indicadores", key = "'buscarPorId:' + #id", unless = "#result == null")
     public Indicador buscarPorId(Long id) {
         return repository.findById(id).orElse(null);
     }
@@ -63,8 +68,9 @@ public class IndicadorServiceImpl implements IndicadorService {
     public List<Indicador> listarTodos() {
         return listarTodos(null);
     }
-    
+
     @Override
+    @Cacheable(value = "indicadores", key = "'listarTodos:' + (#dataInicial != null ? #dataInicial : 'null')", unless = "#result == null || #result.isEmpty()")
     public List<Indicador> listarTodos(String dataInicial) {
         List<Indicador> indicadores = repository.findAll();
         indicadores.forEach(indicador -> {
@@ -78,14 +84,15 @@ public class IndicadorServiceImpl implements IndicadorService {
     public List<Indicador> listarPorRegiao(Long regiaoId) {
         return listarPorRegiao(regiaoId, null);
     }
-    
+
     @Override
+    @Cacheable(value = "indicadores", key = "'listarPorRegiao:' + #regiaoId + ':' + (#dataInicial != null ? #dataInicial : 'null')", unless = "#result == null || #result.isEmpty()")
     public List<Indicador> listarPorRegiao(Long regiaoId, String dataInicial) {
         Regiao regiao = regiaoService.buscarPorId(regiaoId);
         if (regiao == null) {
             throw new RuntimeException("Região não encontrada com ID: " + regiaoId);
         }
-        
+
         List<Indicador> todosIndicadores = repository.findAll().stream()
                 .filter(indicador -> !"S".equals(indicador.getDeletado()))
                 .collect(Collectors.toList());
@@ -98,6 +105,7 @@ public class IndicadorServiceImpl implements IndicadorService {
     }
 
     @Override
+    @CacheEvict(value = "indicadores", allEntries = true)
     public void associarAEvento(Long indicadorId, Long eventoId) {
         Indicador i = repository.findById(indicadorId).orElseThrow();
         Evento e = eventoRepository.findById(eventoId).orElseThrow();
@@ -106,6 +114,7 @@ public class IndicadorServiceImpl implements IndicadorService {
     }
 
     @Override
+    @CacheEvict(value = "indicadores", allEntries = true)
     public void desassociarDeEvento(Long indicadorId, Long eventoId) {
         Indicador i = repository.findById(indicadorId).orElseThrow();
         Evento e = eventoRepository.findById(eventoId).orElseThrow();
@@ -114,18 +123,20 @@ public class IndicadorServiceImpl implements IndicadorService {
     }
 
     @Override
+    @Cacheable(value = "indicadores", key = "'listarEventos:' + #indicadorId", unless = "#result == null || #result.isEmpty()")
     public List<Evento> listarEventos(Long indicadorId) {
         Indicador i = repository.findById(indicadorId).orElseThrow();
         return i.getEventos();
     }
 
     @Override
+    @Cacheable(value = "topExcessosVelocidade", key = "'topExcessos:' + #regiaoId + ':' + (#dataInicial != null ? #dataInicial : 'null')", unless = "#result == null || #result.isEmpty()")
     public java.util.List<IndiceCriticoResponseDTO> listarTopExcessosVelocidade(Long regiaoId, String dataInicial) {
         List<RegistroVelocidade> registros = buscarRegistrosPorRegiao(regiaoId, dataInicial);
 
         class Agg { double somaVel; int cont; LocalDateTime minInf; LocalDateTime maxInf; Integer velPerm; Long regiaoId; String regiaoNome; String endereco; }
 
-        java.util.Map<String, Agg> mapa = new java.util.HashMap<>();
+        Map<String, Agg> mapa = new java.util.HashMap<>();
 
         registros.stream()
                 .filter(r -> r.getVelocidadeRegistrada() != null && r.getRadar() != null && r.getRadar().getVelocidadePermitida() != null && r.getData() != null)
@@ -173,15 +184,15 @@ public class IndicadorServiceImpl implements IndicadorService {
     public Indicador calcularValorIndicadores(Indicador indicador) {
         return calcularValorIndicadores(indicador, null);
     }
-    
+
     public Indicador calcularValorIndicadores(Indicador indicador, String dataInicial) {
         return calcularValorIndicadoresPorRegiao(indicador, null, dataInicial);
     }
-    
+
     public Indicador calcularValorIndicadoresPorRegiao(Indicador indicador, Long regiaoId) {
         return calcularValorIndicadoresPorRegiao(indicador, regiaoId, null);
     }
-    
+
     public Indicador calcularValorIndicadoresPorRegiao(Indicador indicador, Long regiaoId, String dataInicial) {
         if (indicador.getMnemonico() == IndicadorMnemonico.EXCESSO_VELOCIDADE) {
             indicador.setValor(calcularExcessoVelocidade(regiaoId, dataInicial));
@@ -194,25 +205,25 @@ public class IndicadorServiceImpl implements IndicadorService {
         }
         return indicador;
     }
-    
+
     private Double calcularExcessoVelocidade(Long regiaoId) {
         return calcularExcessoVelocidade(regiaoId, null);
     }
-    
+
     private Double calcularExcessoVelocidade(Long regiaoId, String dataInicial) {
         List<RegistroVelocidade> registros = buscarRegistrosPorRegiao(regiaoId, dataInicial);
         
         if (registros.isEmpty()) {
             return 1.0;
         }
-        
+
         long totalRegistros = registros.size();
         long excessos = registros.stream()
                 .filter(registro -> registro.getVelocidadeRegistrada() > registro.getRadar().getVelocidadePermitida())
                 .count();
-        
+
         double percentualExcessos = (double) excessos / totalRegistros * 100;
-        
+
         if (percentualExcessos <= 10) {
             return 1.0;
         } else if (percentualExcessos <= 25) {
@@ -221,11 +232,11 @@ public class IndicadorServiceImpl implements IndicadorService {
             return 3.0;
         }
     }
-    
+
     private Double calcularVariabilidadeVelocidade(Long regiaoId) {
         return calcularVariabilidadeVelocidade(regiaoId, null);
     }
-    
+
     private Double calcularVariabilidadeVelocidade(Long regiaoId, String dataInicial) {
         List<RegistroVelocidade> registros = buscarRegistrosPorRegiao(regiaoId, dataInicial);
         
@@ -236,14 +247,14 @@ public class IndicadorServiceImpl implements IndicadorService {
         List<Integer> velocidades = registros.stream()
                 .map(RegistroVelocidade::getVelocidadeRegistrada)
                 .collect(Collectors.toList());
-        
+
         double media = velocidades.stream().mapToInt(Integer::intValue).average().orElse(0.0);
         double variancia = velocidades.stream()
                 .mapToDouble(v -> Math.pow(v - media, 2))
                 .average().orElse(0.0);
-        
+
         double desvioPadrao = Math.sqrt(variancia);
-        
+
         if (desvioPadrao <= 5) {
             return 1.0;
         } else if (desvioPadrao <= 15) {
@@ -252,29 +263,25 @@ public class IndicadorServiceImpl implements IndicadorService {
             return 3.0;
         }
     }
-    
+
     private Double calcularVeiculosLentos(Long regiaoId) {
         return calcularVeiculosLentos(regiaoId, null);
     }
-    
+
     private Double calcularVeiculosLentos(Long regiaoId, String dataInicial) {
         List<RegistroVelocidade> registros = buscarRegistrosPorRegiao(regiaoId, dataInicial);
         
         if (registros.isEmpty()) {
             return 1.0;
         }
-        
+
         long totalRegistros = registros.size();
         long veiculosLentos = registros.stream()
-                .filter(registro -> {
-                    int velocidadePermitida = registro.getRadar().getVelocidadePermitida();
-                    int velocidadeRegistrada = registro.getVelocidadeRegistrada();
-                    return velocidadeRegistrada < (velocidadePermitida * 0.5);
-                })
+                .filter(registro -> registro.getVelocidadeRegistrada() < registro.getRadar().getVelocidadePermitida() * 0.5)
                 .count();
-        
+
         double percentualVeiculosLentos = (double) veiculosLentos / totalRegistros * 100;
-        
+
         if (percentualVeiculosLentos <= 5) {
             return 1.0;
         } else if (percentualVeiculosLentos <= 15) {
@@ -283,28 +290,20 @@ public class IndicadorServiceImpl implements IndicadorService {
             return 3.0;
         }
     }
-    
-    private List<RegistroVelocidade> buscarRegistrosPorRegiao(Long regiaoId) {
-        return buscarRegistrosPorRegiao(regiaoId, null);
-    }
-    
-    private List<RegistroVelocidade> buscarRegistrosPorRegiao(Long regiaoId, String dataInicial) {
-        LocalDateTime data;
 
-        if (dataInicial != null && !dataInicial.isEmpty()) {
-            try {
-                data = LocalDateTime.parse(dataInicial);
-            } catch (DateTimeParseException ex) {
-                DateTimeFormatter fmtSemSegundos = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-                data = LocalDateTime.parse(dataInicial, fmtSemSegundos);
-            }
+    @Cacheable(value = "registrosVelocidade", key = "'registros:' + (#regiaoId != null ? #regiaoId : 'null') + ':' + (#dataInicial != null ? #dataInicial : 'null')", unless = "#result == null || #result.isEmpty()")
+    private List<RegistroVelocidade> buscarRegistrosPorRegiao(Long regiaoId, String dataInicial) {
+        LocalDateTime inicioDia;
+        LocalDateTime fimDia;
+        
+        if (dataInicial != null) {
+            fimDia = LocalDateTime.parse(dataInicial);
+            inicioDia = fimDia.minusMinutes(5);
         } else {
-            data = LocalDateTime.of(2025, 8, 3, 14, 10, 0);
+            fimDia = LocalDateTime.now();
+            inicioDia = fimDia.minusMinutes(5);
         }
 
-        // Novo requisito: considerar o dia inteiro
-        LocalDateTime inicioDia = data.toLocalDate().atStartOfDay();
-        LocalDateTime fimDia = data.toLocalDate().atTime(23, 59, 59);
 
         if (regiaoId == null) {
             return registroVelocidadeRepository.findByDiaInteiroAndDeletado(inicioDia, fimDia);
